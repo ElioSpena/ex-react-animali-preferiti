@@ -36,8 +36,7 @@
             <div className="modal-container">
               <div className="modal">
                 <h2>{title}</h2>
-                <input type="text" value={value} onChange={onChange} />
-                <p>{content}</p>
+                {content}
                 <button onClick={onClose}>Chiudi</button>
                 <button onClick={onConfirm}>Conferma</button>
               </div>
@@ -52,36 +51,7 @@
         const [inputValue, setInputValue] = useState("");
         const [show, setShow] = useState(false);
 
-        /*       const animalsChoices = [
-              "Cane",
-              "Gatto",
-              "Pappagallo",
-              "Cavallo",
-              "Panda",
-            ]; */
         return (
-          /*   <>
-                <button
-                  onClick={() => {
-                    const randomAnimal =
-                      animalsChoices[
-                        Math.floor(Math.random() * animalsChoices.length)
-                      ];
-
-                    setAnimals([...animals, randomAnimal]);
-                  }}
-                >
-                  Aggiungi Animale
-                </button>
-
-                <details className="animali">
-                  <ul>
-                    {animals.map((a) => (
-                      <li>{a}</li>
-                    ))}
-                  </ul>
-                </details>
-              </> */
           <>
             <button
               onClick={() => {
@@ -90,18 +60,29 @@
             >
               Aggiungi animale
             </button>
-
+            <details>
+              <summary>Animali Preferiti</summary>
+              <ul>
+                {animals.map((a, id) => (
+                  <li key={id}>{a}</li>
+                ))}
+              </ul>
+            </details>
             <Modal
-              title="I miei animali preferiti"
-              content={animals}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              title="Aggiungi animale"
+              content={
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                />
+              }
               show={show}
               onClose={() => {
                 setShow(false);
               }}
               onConfirm={() => {
-                setAnimals([...animals, inputValue, ", "]);
+                setAnimals([...animals, inputValue]);
                 setInputValue("");
                 setShow(false);
               }}
@@ -113,6 +94,7 @@
       root.render(<ReactApp />);
     </script>
   </head>
+  <!-------->
   <body>
     <header>
       <h1>I miei animali Preferiti</h1>
