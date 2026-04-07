@@ -24,7 +24,7 @@
       function Modal({
         title,
         content,
-        show = false,
+        show,
         onClose,
         onConfirm,
         value,
@@ -50,6 +50,35 @@
         const [animals, setAnimals] = useState([]);
         const [inputValue, setInputValue] = useState("");
         const [show, setShow] = useState(false);
+        const [loading, setLoading] = useState(false);
+        const [error, setError] = useState("");
+
+        const apiFetch = async () => {
+          setLoading(true);
+          try {
+            const resp = await fetch(
+              `http://localhost:3333/animals?search=${inputValue}`,
+            );
+            const [data] = await resp.json();
+
+            if (!data) {
+              setError("Nessun animale trovato");
+            }
+            const newAnimal = {
+              name: data.name,
+              description: data.description || "Descrizione non disponibile",
+              image: data.image || null,
+            };
+            setAnimals([...animals, newAnimal]);
+          } catch (err) {
+            console.log(err);
+            setError("Errore durante la ricerca dell'animale");
+          } finally {
+            setLoading(false);
+            setInputValue("");
+            setShow(false);
+          }
+        };
 
         return (
           <>
@@ -60,32 +89,41 @@
             >
               Aggiungi animale
             </button>
+
             <details>
               <summary>Animali Preferiti</summary>
-              <ul>
-                {animals.map((a, id) => (
-                  <li key={id}>{a}</li>
-                ))}
-              </ul>
+              {error && <p>{error}</p>}
+              {animals.map((a, id) => (
+                <div className="card" key={id}>
+                  <h2>{a.name}</h2>
+
+                  <p>{a.description}</p>
+                  {a.image && (
+                    <figure>
+                      <img src={a.image} alt={a.name} />
+                    </figure>
+                  )}
+                </div>
+              ))}
             </details>
             <Modal
               title="Aggiungi animale"
               content={
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                />
+                <>
+                  <input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                  />
+
+                  {loading && <p>Caricamento...</p>}
+                </>
               }
               show={show}
               onClose={() => {
                 setShow(false);
               }}
-              onConfirm={() => {
-                setAnimals([...animals, inputValue]);
-                setInputValue("");
-                setShow(false);
-              }}
+              onConfirm={apiFetch}
             />
           </>
         );
