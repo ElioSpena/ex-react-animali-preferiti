@@ -18,44 +18,97 @@
 
     <script type="text/babel">
       const { useState } = React;
+      const { createRoot } = ReactDOM;
+      const root = createRoot(document.querySelector(".lista-animali"));
+
+      function Modal({
+        title,
+        content,
+        show = false,
+        onClose,
+        onConfirm,
+        value,
+        onChange,
+      }) {
+        return (
+          show &&
+          ReactDOM.createPortal(
+            <div className="modal-container">
+              <div className="modal">
+                <h2>{title}</h2>
+                <input type="text" value={value} onChange={onChange} />
+                <p>{content}</p>
+                <button onClick={onClose}>Chiudi</button>
+                <button onClick={onConfirm}>Conferma</button>
+              </div>
+            </div>,
+            document.body,
+          )
+        );
+      }
 
       const ReactApp = () => {
         const [animals, setAnimals] = useState([]);
-        const animalsChoices = [
-          "Cane",
-          "Gatto",
-          "Pappagallo",
-          "Cavallo",
-          "Panda",
-        ];
+        const [inputValue, setInputValue] = useState("");
+        const [show, setShow] = useState(false);
+
+        /*       const animalsChoices = [
+              "Cane",
+              "Gatto",
+              "Pappagallo",
+              "Cavallo",
+              "Panda",
+            ]; */
         return (
+          /*   <>
+                <button
+                  onClick={() => {
+                    const randomAnimal =
+                      animalsChoices[
+                        Math.floor(Math.random() * animalsChoices.length)
+                      ];
+
+                    setAnimals([...animals, randomAnimal]);
+                  }}
+                >
+                  Aggiungi Animale
+                </button>
+
+                <details className="animali">
+                  <ul>
+                    {animals.map((a) => (
+                      <li>{a}</li>
+                    ))}
+                  </ul>
+                </details>
+              </> */
           <>
             <button
               onClick={() => {
-                const randomAnimal =
-                  animalsChoices[
-                    Math.floor(Math.random() * animalsChoices.length)
-                  ];
-
-                setAnimals([...animals, randomAnimal]);
+                setShow(true);
               }}
             >
-              Aggiungi Animale
+              Aggiungi animale
             </button>
-            <details className="animali">
-              <ul>
-                {animals.map((a) => (
-                  <li>{a}</li>
-                ))}
-              </ul>
-            </details>
+
+            <Modal
+              title="I miei animali preferiti"
+              content={animals}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              show={show}
+              onClose={() => {
+                setShow(false);
+              }}
+              onConfirm={() => {
+                setAnimals([...animals, inputValue, ", "]);
+                setInputValue("");
+                setShow(false);
+              }}
+            />
           </>
         );
       };
-
-      const { createRoot } = ReactDOM;
-      const animalList = document.querySelector(".lista-animali");
-      const root = createRoot(animalList);
 
       root.render(<ReactApp />);
     </script>
